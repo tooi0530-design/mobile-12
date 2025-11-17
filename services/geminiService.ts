@@ -1,15 +1,9 @@
-
 import { GoogleGenAI } from "@google/genai";
 
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-  throw new Error("API_KEY is not set in environment variables.");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
-
 export const generateWallpaper = async (prompt: string): Promise<string> => {
+  // API를 호출하기 직전에 새 인스턴스를 생성하여 최신 API 키를 사용합니다.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+
   try {
     const response = await ai.models.generateImages({
       model: 'imagen-4.0-generate-001',
@@ -29,6 +23,7 @@ export const generateWallpaper = async (prompt: string): Promise<string> => {
     }
   } catch (error) {
     console.error("Gemini API Error:", error);
-    throw new Error("AI와 통신하는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    // 컴포넌트에서 오류를 처리할 수 있도록 원본 오류를 다시 throw합니다.
+    throw error;
   }
 };
